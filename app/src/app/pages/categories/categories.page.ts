@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButt
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../../services/category';
 import { CompetitionService } from '../../services/competition';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-categories',
@@ -34,7 +35,8 @@ export class CategoriesPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private competitionService: CompetitionService
+    private competitionService: CompetitionService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -59,5 +61,11 @@ export class CategoriesPage implements OnInit {
 
   async loadCategories() {
     this.categories = await this.categoryService.getCategories(this.competitionId);
+  }
+
+  goToEntries(categoryId: string) {
+    this.router.navigateByUrl(
+      `/entries/${this.competitionId}/${categoryId}`
+    );
   }
 }

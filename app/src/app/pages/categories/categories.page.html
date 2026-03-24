@@ -17,7 +17,7 @@
   </ion-button>
 
   <ion-list>
-    <ion-item *ngFor="let cat of categories">
+      <ion-item *ngFor="let cat of categories" (click)="goToEntries(cat.id)">
       {{ cat.name }}
     </ion-item>
   </ion-list>

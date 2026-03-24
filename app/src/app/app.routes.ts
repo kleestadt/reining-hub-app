@@ -24,5 +24,14 @@ export const routes: Routes = [
   path: 'categories/:id',
     loadComponent: () =>
       import('./pages/categories/categories.page').then(m => m.CategoriesPage),
+  },
+  {
+    path: 'entries',
+    loadComponent: () => import('./pages/entries/entries.page').then( m => m.EntriesPage)
+  },
+  {
+  path: 'entries/:competitionId/:categoryId',
+    loadComponent: () =>
+      import('./pages/entries/entries.page').then(m => m.EntriesPage),
   }
 ];

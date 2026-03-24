@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/competitions"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Inscrições</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-item>
+    <ion-input [(ngModel)]="name" placeholder="Nome do competidor"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input [(ngModel)]="horse" placeholder="Nome do cavalo"></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" (click)="addEntry()">
+    Adicionar inscrição
+  </ion-button>
+
+  <ion-button expand="block" color="secondary" (click)="generateOrder()">
+    Gerar ordem de entrada
+  </ion-button>
+
+  <ion-list>
+    <ion-item *ngFor="let entry of entries">
+      {{ entry.order }} - {{ entry.name }} - 🐎: {{ entry.horse }}
+    </ion-item>
+  </ion-list>
+
+</ion-content>
