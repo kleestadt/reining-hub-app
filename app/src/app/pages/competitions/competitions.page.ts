@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-competitions',
   templateUrl: './competitions.page.html',
   standalone: true,
-  imports: [IonicModule, FormsModule, CommonModule],
+  imports: [IonicModule, CommonModule, FormsModule],
 })
 export class CompetitionsPage implements OnInit {
 

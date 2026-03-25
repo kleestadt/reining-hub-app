@@ -16,6 +16,7 @@ export class EntriesPage implements OnInit {
   name = '';
   horse = '';
   entries: any[] = [];
+  editingId: string | null = null;
 
   competitionId = '';
   categoryId = '';
@@ -35,14 +36,29 @@ export class EntriesPage implements OnInit {
   async addEntry() {
     if (!this.name.trim() || !this.horse.trim()) return;
 
-    await this.entryService.createEntry(
-      this.competitionId,
-      this.categoryId,
-      {
-        name: this.name,
-        horse: this.horse
-      }
-    );
+    if (this.editingId) {
+      await this.entryService.updateEntry(
+        this.competitionId,
+        this.categoryId,
+        this.editingId,
+        {
+          name: this.name,
+          horse: this.horse
+        }
+      );
+
+      this.editingId = null;
+
+    } else {
+      await this.entryService.createEntry(
+        this.competitionId,
+        this.categoryId,
+        {
+          name: this.name,
+          horse: this.horse
+        }
+      );
+    }
 
     this.name = '';
     this.horse = '';
@@ -65,4 +81,21 @@ export class EntriesPage implements OnInit {
         order: index + 1
       }));
   }
+
+  async deleteEntry(id: string) {
+    await this.entryService.deleteEntry(
+      this.competitionId,
+      this.categoryId,
+      id
+    );
+
+    this.loadEntries();
+  }
+
+  editEntry(entry: any) {
+    this.name = entry.name;
+    this.horse = entry.horse;
+    this.editingId = entry.id;
+  }
+
 }

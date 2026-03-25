@@ -24,7 +24,6 @@ export class LoginPage {
   async login() {
     try {
       await this.authService.login(this.email, this.password);
-      alert('Login realizado!');
       await this.router.navigateByUrl('/competitions');
     } catch (error) {
       console.error(error);

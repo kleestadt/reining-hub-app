@@ -2,7 +2,7 @@
   <ion-toolbar>
 
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/competitions"></ion-back-button>
+      <ion-back-button [defaultHref]="'/categories/' + competitionId"></ion-back-button>
     </ion-buttons>
 
     <ion-title>Inscrições</ion-title>
@@ -21,7 +21,7 @@
   </ion-item>
 
   <ion-button expand="block" (click)="addEntry()">
-    Adicionar inscrição
+    {{ editingId ? 'Atualizar inscrição' : 'Adicionar inscrição' }}
   </ion-button>
 
   <ion-button expand="block" color="secondary" (click)="generateOrder()">
@@ -30,8 +30,20 @@
 
   <ion-list>
     <ion-item *ngFor="let entry of entries">
-      {{ entry.order }} - {{ entry.name }} - 🐎: {{ entry.horse }}
-    </ion-item>
+
+      <ion-label>
+        {{ entry.order }} - {{ entry.name }} - Cavalo: {{ entry.horse }}
+      </ion-label>
+
+      <ion-button color="danger" (click)="deleteEntry(entry.id)">
+        Excluir
+      </ion-button>
+
+      <ion-button color="primary" (click)="editEntry(entry)">
+        Editar
+      </ion-button>
+
+    </ion-item> 
   </ion-list>
 
 </ion-content>

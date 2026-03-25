@@ -1,8 +1,14 @@
 <ion-header>
   <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/competitions"></ion-back-button>
+    </ion-buttons>
+
     <ion-title>
       Categorias - {{ competitionName }}
     </ion-title>
+
   </ion-toolbar>
 </ion-header>
 
@@ -13,14 +19,27 @@
   </ion-item>
 
   <ion-button expand="block" (click)="addCategory()">
-    Criar categoria
+    {{ editingId ? 'Atualizar categoria' : 'Criar categoria' }}
   </ion-button>
 
   <ion-list>
-      <ion-item *ngFor="let cat of categories" (click)="goToEntries(cat.id)">
-      {{ cat.name }}
+    <ion-item *ngFor="let cat of categories" (click)="goToEntries(cat.id)">
+
+      <ion-label>
+        {{ cat.name }}
+      </ion-label>
+
+      <ion-button size="small" (click)="editCategory(cat); $event.stopPropagation()">
+        Editar
+      </ion-button>
+
+      <ion-button size="small" color="danger" (click)="deleteCategory(cat.id); $event.stopPropagation()">
+        Excluir
+      </ion-button>
+
     </ion-item>
   </ion-list>
+
   <p *ngIf="categories.length === 0">
     Nenhuma categoria cadastrada ainda.
   </p>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonInput, IonButton, IonList } from '@ionic/angular/standalone';
+import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../../services/category';
 import { CompetitionService } from '../../services/competition';
@@ -12,18 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './categories.page.html',
   styleUrls: ['./categories.page.scss'],
   standalone: true,
-  imports: [
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonInput,
-    IonButton,
-    IonList,
-    CommonModule,
-    FormsModule
-  ]
+  imports: [IonicModule, CommonModule, FormsModule],
 })
 export class CategoriesPage implements OnInit {
 
@@ -31,12 +20,13 @@ export class CategoriesPage implements OnInit {
   categories: any[] = [];
   competitionId = '';
   competitionName = '';
+  editingId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private categoryService: CategoryService,
     private competitionService: CompetitionService,
-    private router: Router
+    private router: Router 
   ) {}
 
   async ngOnInit() {
@@ -49,13 +39,33 @@ export class CategoriesPage implements OnInit {
   }
 
   async addCategory() {
-    if (!this.name) return;
+    if (!this.name.trim()) return;
 
-    await this.categoryService.createCategory(this.competitionId, {
-      name: this.name
-    });
+    if (this.editingId) {
+      await this.categoryService.updateCategory(
+        this.competitionId,
+        this.editingId,
+        { name: this.name }
+      );
+      this.editingId = null;
+    } else {
+      await this.categoryService.createCategory(
+        this.competitionId,
+        { name: this.name }
+      );
+    }
 
     this.name = '';
+    this.loadCategories();
+  }
+
+  editCategory(category: any) {
+    this.name = category.name;
+    this.editingId = category.id;
+  }
+
+  async deleteCategory(id: string) {
+    await this.categoryService.deleteCategory(this.competitionId, id);
     this.loadCategories();
   }
 

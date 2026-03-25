@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getDatabase, ref, push, get, child } from 'firebase/database';
+import { remove } from 'firebase/database';
+import { update } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
@@ -27,4 +29,15 @@ export class EntryService {
       return [];
     }
   }
+
+  async deleteEntry(competitionId: string, categoryId: string, entryId: string) {
+    const entryRef = ref(this.db, `entries/${competitionId}/${categoryId}/${entryId}`);
+    return await remove(entryRef);
+  }
+
+  async updateEntry(competitionId: string, categoryId: string, entryId: string, data: any) {
+    const entryRef = ref(this.db, `entries/${competitionId}/${categoryId}/${entryId}`);
+    return await update(entryRef, data);
+  }
+
 }
