@@ -35,7 +35,11 @@
   <ion-list>
     <ion-item *ngFor="let entry of entries">
       <strong>{{ entry.order || '-' }}</strong>
-      &nbsp; - {{ entry.name }} - 🐎 {{ entry.horse }}
+      &nbsp; - {{ entry.name }} - Cavalo: {{ entry.horse }}
+
+      <p *ngIf="getAverage(entry) > 0">
+        🏆 Média: {{ getAverage(entry) | number:'1.1-2' }}
+      </p>
 
       <ion-button color="danger" (click)="deleteEntry(entry.id)">
         Excluir
@@ -45,6 +49,32 @@
         Editar
       </ion-button>
 
+      <div *ngFor="let judge of judges">
+
+        <ion-item>
+          <ion-label>
+            {{ judge.name }}
+          </ion-label>
+
+          <ion-input
+            type="number"
+            placeholder="Nota"
+            [(ngModel)]="entry.scores[judge.id]"
+            (ionChange)="saveScore(entry)">
+          </ion-input>
+
+        </ion-item>
+
+      </div>
+
+    </ion-item>
+  </ion-list>
+
+  <h2>Ranking</h2>
+
+  <ion-list>
+    <ion-item *ngFor="let entry of getRanking(); let i = index">
+      {{ i + 1 }}º - {{ entry.name }} ({{ getAverage(entry) | number:'1.1-2' }})
     </ion-item>
   </ion-list>
 

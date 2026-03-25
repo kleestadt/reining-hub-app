@@ -30,8 +30,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/entries/entries.page').then( m => m.EntriesPage)
   },
   {
-  path: 'entries/:competitionId/:categoryId',
+    path: 'entries/:competitionId/:categoryId',
     loadComponent: () =>
       import('./pages/entries/entries.page').then(m => m.EntriesPage),
+  },
+  {
+    path: 'judges/:competitionId',
+    loadComponent: () =>
+      import('./pages/judges/judges.page').then(m => m.JudgesPage),
   }
 ];

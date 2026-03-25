@@ -43,9 +43,9 @@ export class CompetitionsPage implements OnInit {
     this.loadCompetitions();
   }
 
-
-
-
+  goToJudges(id: string) {
+    this.router.navigateByUrl(`/judges/${id}`);
+  }
 
   editCompetition(competition: any) {
     this.name = competition.name;

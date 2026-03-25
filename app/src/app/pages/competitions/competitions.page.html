@@ -27,6 +27,10 @@
         {{ comp.name }}
       </ion-label>
 
+      <ion-button (click)="goToJudges(comp.id); $event.stopPropagation()">
+        Juízes
+      </ion-button>
+
       <ion-button size="small" (click)="editCompetition(comp); $event.stopPropagation()">
         Editar
       </ion-button>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { EntryService } from '../../services/entry';
+import { JudgeService } from '../../services/judge';
 
 @Component({
   selector: 'app-entries',
@@ -17,13 +18,15 @@ export class EntriesPage implements OnInit {
   horse = '';
   entries: any[] = [];
   editingId: string | null = null;
+  judges: any[] = [];
 
   competitionId = '';
   categoryId = '';
 
   constructor(
     private route: ActivatedRoute,
-    private entryService: EntryService
+    private entryService: EntryService,
+    private judgeService: JudgeService
   ) {}
 
   ngOnInit() {
@@ -31,6 +34,7 @@ export class EntriesPage implements OnInit {
     this.categoryId = this.route.snapshot.paramMap.get('categoryId') || '';
 
     this.loadEntries();
+    this.loadJudges();
   }
 
   hasOrder(): boolean {
@@ -79,7 +83,11 @@ export class EntriesPage implements OnInit {
       this.categoryId
     );
 
-    this.entries = data.sort((a, b) => (a.order || 999) - (b.order || 999));
+    this.entries = data.map(e => ({
+      ...e,
+      scores: e.scores || {}
+    }))
+    .sort((a, b) => (a.order || 999) - (b.order || 999));
   }
 
   async generateOrder() {
@@ -128,6 +136,36 @@ export class EntriesPage implements OnInit {
     this.name = entry.name;
     this.horse = entry.horse;
     this.editingId = entry.id;
+  }
+
+  async loadJudges() {
+    this.judges = await this.judgeService.getJudges(this.competitionId);
+  }
+
+  async saveScore(entry: any) {
+    await this.entryService.updateEntry(
+      this.competitionId,
+      this.categoryId,
+      entry.id,
+      { scores: entry.scores }
+    );
+  }
+
+  getAverage(entry: any): number {
+
+    const scores = Object.values(entry.scores || {})
+      .map((s: any) => Number(s));
+
+    if (!scores.length) return 0;
+
+    const total = scores.reduce((a, b) => a + b, 0);
+
+    return total / scores.length;
+  }
+
+  getRanking() {
+    return [...this.entries]
+      .sort((a, b) => this.getAverage(b) - this.getAverage(a));
   }
 
 }
