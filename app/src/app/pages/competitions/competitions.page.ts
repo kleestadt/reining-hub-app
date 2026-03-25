@@ -15,6 +15,7 @@ export class CompetitionsPage implements OnInit {
 
   name = '';
   competitions: any[] = [];
+  editingId: string | null = null;
 
   constructor(
     private compService: CompetitionService,
@@ -26,11 +27,33 @@ export class CompetitionsPage implements OnInit {
   }
 
   async addCompetition() {
-    if (!this.name) return;
+    if (!this.name.trim()) return;
 
-    await this.compService.createCompetition({ name: this.name });
+    if (this.editingId) {
+      await this.compService.updateCompetition(
+        this.editingId,
+        { name: this.name }
+      );
+      this.editingId = null;
+    } else {
+      await this.compService.createCompetition({ name: this.name });
+    }
 
     this.name = '';
+    this.loadCompetitions();
+  }
+
+
+
+
+
+  editCompetition(competition: any) {
+    this.name = competition.name;
+    this.editingId = competition.id;
+  }
+
+  async deleteCompetition(id: string) {
+    await this.compService.deleteCompetition(id);
     this.loadCompetitions();
   }
 

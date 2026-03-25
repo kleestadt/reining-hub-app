@@ -24,16 +24,18 @@
     {{ editingId ? 'Atualizar inscrição' : 'Adicionar inscrição' }}
   </ion-button>
 
-  <ion-button expand="block" color="secondary" (click)="generateOrder()">
-    Gerar ordem de entrada
+  <ion-button 
+    expand="block" 
+    color="secondary" 
+    (click)="generateOrder()"
+    *ngIf="hasUnorderedEntries()">
+    Atualizar ordem de entrada
   </ion-button>
 
   <ion-list>
     <ion-item *ngFor="let entry of entries">
-
-      <ion-label>
-        {{ entry.order }} - {{ entry.name }} - Cavalo: {{ entry.horse }}
-      </ion-label>
+      <strong>{{ entry.order || '-' }}</strong>
+      &nbsp; - {{ entry.name }} - 🐎 {{ entry.horse }}
 
       <ion-button color="danger" (click)="deleteEntry(entry.id)">
         Excluir
@@ -43,7 +45,7 @@
         Editar
       </ion-button>
 
-    </ion-item> 
+    </ion-item>
   </ion-list>
 
 </ion-content>

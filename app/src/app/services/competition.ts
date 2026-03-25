@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getDatabase, ref, push, get, child } from 'firebase/database';
+import { remove } from 'firebase/database';
+import { update } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +39,15 @@ export class CompetitionService {
     } else {
       return null;
     }
+  }
+
+  async deleteCompetition(competitionId: string) {
+    const competitionRef = ref(this.db, `competitions/${competitionId}`);
+    return await remove(competitionRef);
+  }
+
+  async updateCompetition(competitionId: string, data: any) {
+    const competitionRef = ref(this.db, `competitions/${competitionId}`);
+    return await update(competitionRef, data);
   }
 }

@@ -33,6 +33,14 @@ export class EntriesPage implements OnInit {
     this.loadEntries();
   }
 
+  hasOrder(): boolean {
+    return this.entries.some(e => e.order);
+  }
+
+  hasUnorderedEntries(): boolean {
+    return this.entries.some(e => !e.order);
+  }
+
   async addEntry() {
     if (!this.name.trim() || !this.horse.trim()) return;
 
@@ -66,20 +74,44 @@ export class EntriesPage implements OnInit {
   }
 
   async loadEntries() {
-    this.entries = await this.entryService.getEntries(
+    const data = await this.entryService.getEntries(
       this.competitionId,
       this.categoryId
     );
+
+    this.entries = data.sort((a, b) => (a.order || 999) - (b.order || 999));
   }
 
-  generateOrder() {
-    this.entries = this.entries
+  async generateOrder() {
+
+    const unordered = this.entries.filter(e => !e.order);
+
+    if (unordered.length === 0) {
+      alert('Todos já possuem ordem!');
+      return;
+    }
+
+    const shuffled = unordered
       .map(e => ({ ...e, sort: Math.random() }))
-      .sort((a, b) => a.sort - b.sort)
-      .map((e, index) => ({
-        ...e,
-        order: index + 1
-      }));
+      .sort((a, b) => a.sort - b.sort);
+
+    // pegar maior ordem atual
+    const maxOrder = Math.max(
+      ...this.entries.map(e => e.order || 0)
+    );
+
+    for (let i = 0; i < shuffled.length; i++) {
+      const entry = shuffled[i];
+
+      await this.entryService.updateEntry(
+        this.competitionId,
+        this.categoryId,
+        entry.id,
+        { order: maxOrder + i + 1 }
+      );
+    }
+
+    this.loadEntries();
   }
 
   async deleteEntry(id: string) {
