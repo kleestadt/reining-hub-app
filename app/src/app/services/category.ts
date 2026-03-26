@@ -15,6 +15,21 @@ export class CategoryService {
     return await push(refPath, data);
   }
 
+  async getCategoryById(competitionId: string, categoryId: string) {
+    const categoryRef = ref(this.db, `categories/${competitionId}/${categoryId}`);
+
+    const snapshot = await get(categoryRef);
+
+    if (snapshot.exists()) {
+      return {
+        id: categoryId,
+        ...snapshot.val()
+      };
+    }
+
+    return null;
+  }
+
   async getCategories(competitionId: string) {
     const dbRef = ref(this.db);
     const snapshot = await get(child(dbRef, `categories/${competitionId}`));
@@ -25,9 +40,9 @@ export class CategoryService {
         id: key,
         ...data[key]
       }));
-    } else {
-      return [];
     }
+
+    return [];
   }
 
   async deleteCategory(competitionId: string, categoryId: string) {

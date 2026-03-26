@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { EntryService } from '../../services/entry';
 import { JudgeService } from '../../services/judge';
+import { CategoryService } from '../../services/category';
 
 @Component({
   selector: 'app-entries',
@@ -22,11 +23,13 @@ export class EntriesPage implements OnInit {
 
   competitionId = '';
   categoryId = '';
+  categoryName: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private entryService: EntryService,
-    private judgeService: JudgeService
+    private judgeService: JudgeService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit() {
@@ -35,6 +38,7 @@ export class EntriesPage implements OnInit {
 
     this.loadEntries();
     this.loadJudges();
+    this.loadCategoryName();
   }
 
   hasOrder(): boolean {
@@ -166,6 +170,17 @@ export class EntriesPage implements OnInit {
   getRanking() {
     return [...this.entries]
       .sort((a, b) => this.getAverage(b) - this.getAverage(a));
+  }
+
+  async loadCategoryName() {
+    const category = await this.categoryService.getCategoryById(
+      this.competitionId,
+      this.categoryId
+    );
+
+    if (category) {
+      this.categoryName = category.name;
+    }
   }
 
 }
