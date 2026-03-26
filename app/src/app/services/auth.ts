@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  User
+} from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -14,5 +20,13 @@ export class AuthService {
 
   register(email: string, password: string) {
     return createUserWithEmailAndPassword(this.auth, email, password);
+  }
+
+  getCurrentUser(): Promise<User | null> {
+    return new Promise((resolve) => {
+      onAuthStateChanged(this.auth, (user) => {
+        resolve(user);
+      });
+    });
   }
 }
