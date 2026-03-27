@@ -1,17 +1,21 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Minhas Competi��es</ion-title>
+    <ion-title>Minhas Competições</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
-  <ion-list *ngIf="!loading">
+  <ion-spinner *ngIf="loading"></ion-spinner>
+
+  <ion-list *ngIf="!loading && competitions.length > 0">
     <ion-item *ngFor="let comp of competitions">
       {{ comp.name }}
     </ion-item>
   </ion-list>
 
-  <ion-spinner *ngIf="loading"></ion-spinner>
+  <div *ngIf="!loading && competitions.length === 0" class="ion-text-center ion-padding">
+    Nenhuma competição atribuída
+  </div>
 
 </ion-content>
