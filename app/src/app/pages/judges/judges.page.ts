@@ -19,6 +19,9 @@ export class JudgesPage implements OnInit {
   competitionId = '';
   editingId: string | null = null;
 
+  email = '';
+  password = '';
+
   constructor(
     private route: ActivatedRoute,
     private judgeService: JudgeService
@@ -27,6 +30,10 @@ export class JudgesPage implements OnInit {
   ngOnInit() {
     this.competitionId = this.route.snapshot.paramMap.get('competitionId') || '';
     this.loadJudges();
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   async addJudge() {
@@ -41,13 +48,35 @@ export class JudgesPage implements OnInit {
       this.editingId = null;
 
     } else {
+      const email = this.email.trim().toLowerCase();
+      const password = this.password;
+
+      if (!email || !password) {
+        alert('Informe email e senha do juiz.');
+        return;
+      }
+
+      if (!this.isValidEmail(email)) {
+        alert('Email inválido.');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('A senha deve ter pelo menos 6 caracteres.');
+        return;
+      }
+
       await this.judgeService.createJudge(
         this.competitionId,
-        { name: this.name }
+        this.name,
+        email,
+        password
       );
     }
 
     this.name = '';
+    this.email = '';
+    this.password = '';
     this.loadJudges();
   }
 

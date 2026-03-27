@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CompetitionService } from '../../services/competition';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-competitions',
@@ -21,11 +22,23 @@ export class CompetitionsPage implements OnInit {
 
   constructor(
     private compService: CompetitionService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.waitForAuth();
     this.loadCompetitions();
+  }
+
+  async waitForAuth(): Promise<void> {
+    let user = await this.authService.getCurrentUser();
+
+    if (user) return;
+
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    return this.waitForAuth();
   }
 
   async addCompetition() {
