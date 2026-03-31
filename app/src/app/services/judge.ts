@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { getDatabase, ref, get, set, child, update, remove } from 'firebase/database';
 import { AuthService } from './auth';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { getAuth } from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -77,52 +75,15 @@ export class JudgeService {
 
   // excluir juiz
   async deleteJudge(competitionId: string, judgeId: string) {
-    const refPath = ref(this.db, `judges/${competitionId}/${judgeId}`);
-    return await remove(refPath);
-  }
 
-  async addJudgeToCompetition(competitionId: string, name: string, email: string) {
+    const updates: any = {};
 
-    const normalizedEmail = email.trim().toLowerCase();
+    // remove da competição
+    updates[`judges/${competitionId}/${judgeId}`] = null;
 
-    const existingUser = await this.authService.findUserByEmail(normalizedEmail);
+    // remove vínculo
+    updates[`judge_competitions/${judgeId}/${competitionId}`] = null;
 
-    let userId: string;
-
-    if (existingUser) {
-      // ✅ já existe → NÃO cria de novo
-      userId = existingUser.uid;
-
-    } else {
-      // 🆕 cria novo usuário
-      const password = '123456';
-
-      const auth = getAuth();
-
-      const userCredential = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
-
-      userId = userCredential.user.uid;
-
-      // salva user
-      await set(ref(this.db, `users/${userId}`), {
-        email: normalizedEmail,
-        role: 'judge'
-      });
-
-      // salva índice (SÓ aqui!)
-      const emailKey = normalizedEmail.replace('.', '_');
-
-      await set(ref(this.db, `user_emails/${emailKey}`), {
-        uid: userId
-      });
-    }
-
-    // 🔗 vincular SEMPRE (mesmo se já existir)
-    await set(ref(this.db, `judges/${competitionId}/${userId}`), {
-      userId,
-      name
-    });
-
-    await set(ref(this.db, `judge_competitions/${userId}/${competitionId}`), true);
+    await update(ref(this.db), updates);
   }
 }
