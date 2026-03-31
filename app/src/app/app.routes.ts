@@ -42,5 +42,13 @@ export const routes: Routes = [
   {
     path: 'judge-home',
     loadComponent: () => import('./pages/judge-home/judge-home.page').then( m => m.JudgeHomePage)
+  },
+  {
+    path: 'judge-competition/:id',
+    loadComponent: () => import('./pages/judge-competition/judge-competition.page').then(m => m.JudgeCompetitionPage)
+  },
+  {
+    path: 'judge-competition',
+    loadComponent: () => import('./pages/judge-competition/judge-competition.page').then( m => m.JudgeCompetitionPage)
   }
 ];

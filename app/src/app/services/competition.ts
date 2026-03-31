@@ -54,19 +54,30 @@ export class CompetitionService {
     if (!user) throw new Error('Usuário não autenticado');
 
     const dbRef = ref(this.db);
+
+    // busca competição
     const snapshot = await get(child(dbRef, `competitions/${id}`));
 
-    if (snapshot.exists()) {
-      const data = snapshot.val();
+    if (!snapshot.exists()) return null;
 
-      if (data.ownerId !== user.uid) {
-        throw new Error('Acesso negado');
-      }
+    const data = snapshot.val();
 
+    // ? se for owner
+    if (data.ownerId === user.uid) {
       return data;
-    } else {
-      return null;
     }
+
+    // ?? verifica se é juiz
+    const judgeSnapshot = await get(
+      child(dbRef, `judge_competitions/${user.uid}/${id}`)
+    );
+
+    if (judgeSnapshot.exists()) {
+      return data;
+    }
+
+    // ? nem owner nem juiz
+    throw new Error('Acesso negado');
   }
 
   async deleteCompetition(competitionId: string) {

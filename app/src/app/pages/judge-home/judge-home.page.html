@@ -1,6 +1,12 @@
 <ion-header>
   <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+
     <ion-title>Minhas Competições</ion-title>
+
   </ion-toolbar>
 </ion-header>
 
@@ -9,7 +15,7 @@
   <ion-spinner *ngIf="loading"></ion-spinner>
 
   <ion-list *ngIf="!loading && competitions.length > 0">
-    <ion-item *ngFor="let comp of competitions">
+    <ion-item button *ngFor="let comp of competitions" (click)="goToCompetition(comp)">
       {{ comp.name }}
     </ion-item>
   </ion-list>

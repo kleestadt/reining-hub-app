@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   User
 } from 'firebase/auth';
-import { getDatabase, ref, set, get } from 'firebase/database';
+import { getDatabase, ref, set, get, query, orderByChild, equalTo } from 'firebase/database';
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +32,17 @@ export class AuthService {
 
     const db = getDatabase();
 
+    // salva usuário
     await set(ref(db, `users/${user.uid}`), {
       email: normalizedEmail,
       role
+    });
+
+    // ?? salva índice de email
+    const emailKey = normalizedEmail.replace('.', '_');
+
+    await set(ref(db, `user_emails/${emailKey}`), {
+      uid: user.uid
     });
 
     return user;
@@ -68,6 +76,47 @@ export class AuthService {
       email: normalizedEmail,
       role
     });
+
+    // ?? índice
+    const emailKey = normalizedEmail.replace('.', '_');
+
+    await set(ref(db, `user_emails/${emailKey}`), {
+      uid
+    });
+  }
+
+  async findUserByEmail(email: string) {
+    const db = getDatabase();
+
+    const normalizedEmail = this.normalizeEmail(email);
+    const emailKey = normalizedEmail.replace('.', '_');
+
+    const snapshot = await get(ref(db, `user_emails/${emailKey}`));
+
+    if (snapshot.exists()) return snapshot.val(); // { uid }
+
+    // fallback: search users by email if the index is missing
+    const usersQuery = query(
+      ref(db, 'users'),
+      orderByChild('email'),
+      equalTo(normalizedEmail)
+    );
+
+    const usersSnapshot = await get(usersQuery);
+
+    if (!usersSnapshot.exists()) return null;
+
+    const usersData = usersSnapshot.val();
+    const uid = Object.keys(usersData)[0];
+
+    // try to rebuild index for future lookups
+    try {
+      await set(ref(db, `user_emails/${emailKey}`), { uid });
+    } catch {
+      // ignore index write failures (permissions, etc.)
+    }
+
+    return { uid };
   }
 
 }

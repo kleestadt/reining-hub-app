@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { JudgeService } from '../../services/judge';
+import { CompetitionService } from '../../services/competition';
 
 @Component({
   selector: 'app-judges',
@@ -17,6 +18,7 @@ export class JudgesPage implements OnInit {
   judges: any[] = [];
 
   competitionId = '';
+  competitionName = '';
   editingId: string | null = null;
 
   email = '';
@@ -24,11 +26,14 @@ export class JudgesPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private judgeService: JudgeService
+    private judgeService: JudgeService,
+    private competitionService: CompetitionService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.competitionId = this.route.snapshot.paramMap.get('competitionId') || '';
+    const comp = await this.competitionService.getCompetitionById(this.competitionId);
+    this.competitionName = comp?.name || '';
     this.loadJudges();
   }
 
